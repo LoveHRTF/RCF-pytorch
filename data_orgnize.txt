@@ -1,7 +1,7 @@
 For orgnizing data:
 
 1: Download datasets
-    VGG16 Model
+    VGG16 Model:
 	http://www.vlfeat.org/matconvnet/models/fast-rcnn-vgg16-pascal07-dagnn.mat
 
     List File:
@@ -24,7 +24,7 @@ For orgnizing data:
 	bsds_pascal_train_pair.lst
 
     Copy folder $RootFolder/data/HED-BSDS_PASCAL/HED-BSDS/test to 
-	 folder $RootFolder/data/HED-BSDS_PASCAL/HED-BSDS
+	 folder $RootFolder/data/HED-BSDS_PASCAL/
 
 4: Model File Process:
 
