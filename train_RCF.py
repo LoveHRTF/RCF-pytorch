@@ -45,7 +45,7 @@ parser.add_argument('--itersize', default=10, type=int,
 # =============== misc
 parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-parser.add_argument('--print_freq', '-p', default=1000, type=int,
+parser.add_argument('--print_freq', '-p', default=50, type=int,
                     metavar='N', help='print frequency (default: 50)')
 parser.add_argument('--gpu', default='0', type=str,
                     help='GPU ID')
@@ -54,7 +54,6 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
 parser.add_argument('--tmp', help='tmp folder', default='tmp/RCF')
 # ================ dataset
 parser.add_argument('--dataset', help='root folder of dataset', default='data/HED-BSDS_PASCAL')
-# parser.add_argument('--dataset', help='root folder of dataset', default='HED-BSDS_PASCAL')
 args = parser.parse_args()
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
@@ -76,10 +75,14 @@ def main():
     test_loader = DataLoader(
         test_dataset, batch_size=args.batch_size,
         num_workers=8, drop_last=True,shuffle=False)
-    # with open('data/HED-BSDS_PASCAL/test.lst', 'r') as f:
     with open('data/HED-BSDS_PASCAL/HED-BSDS/test.lst', 'r') as f:
         test_list = f.readlines()
     test_list = [split(i.rstrip())[1] for i in test_list]
+
+
+    """ Test Dataset only contain 200 images, increase bs will decrease the actual test size """
+    """ GOD KNOWS WHAT THE HELL IS GOING ON """
+    #TODO: Modify batch_size parameter for correctly loading.
     assert len(test_list) == len(test_loader), "%d vs %d" % (len(test_list), len(test_loader))
 
     # model
