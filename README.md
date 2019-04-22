@@ -1,3 +1,5 @@
+## Based on RCF-pytorch
+
 ### Richer Convolutional Features for Edge Detection
 Thanks to <a href="https://github.com/yun-liu">yun-liu's</a> help.
 Created by XuanyiLi, if you have any problem in using it, please contact:xuanyili.edu@gmail.com.
@@ -25,19 +27,6 @@ If you find our work useful in your research, please consider citing:
   booktitle={IEEE CVPR},
   year={2017},
 }
-### For you:😋
-this is the edge version of movie Titanic， for my love:
-![Titanic example](https://github.com/meteorshowers/RCF-pytorch/blob/master/doc/testw.gif)
-### Introduction
-I implement the edge detection model according to the <a href="https://github.com/yun-liu/rcf">RCF</a>  model in pytorch. 
-
-the result of my pytorch model will be released in the future
-
-| Method |ODS F-score on BSDS500 dataset |ODS F-score on NYU Depth dataset|
-|:---|:---:|:---:|
-|ours| 0.808 | *** |
-| Reference[1]| 0.811 | ***  |
-
 
 ### Installation
 
