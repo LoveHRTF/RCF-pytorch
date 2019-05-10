@@ -1,1 +1,8 @@
 tmp/
+__pycache__/
+*.out
+trainOut/
+*.gz
+*.tgz
+data/
+vgg16convs.mat
