@@ -55,8 +55,11 @@ class BSDS_RCFLoader(data.Dataset):
             img_file = self.filelist[index].rstrip()
 
         if self.split == "train":
-            img = np.array(cv2.imread(join(self.root, img_file)), dtype=np.float32)
-            img = prepare_image_cv2(img)
+            # img = np.array(cv2.imread(join(self.root, img_file)), dtype=np.float32)
+            # img = prepare_image_cv2(img)
+            # return img, lb
+            img = np.array(Image.open(join(self.root, img_file)), dtype=np.float32)
+            img = prepare_image_PIL(img)
             return img, lb
         else:
             img = np.array(Image.open(join(self.root, img_file)), dtype=np.float32)

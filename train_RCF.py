@@ -1,4 +1,4 @@
-#!/user/bin/python
+  #!/user/bin/python
 # coding=utf-8
 import os, sys
 import numpy as np
@@ -23,6 +23,7 @@ from functions import  cross_entropy_loss_RCF, SGD_caffe
 from torch.utils.data import DataLoader, sampler
 from utils import Logger, Averagvalue, save_checkpoint, load_vgg16pretrain
 from os.path import join, split, isdir, isfile, splitext, split, abspath, dirname
+import visdom
 
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--batch_size', default=1, type=int, metavar='BT',
@@ -75,6 +76,7 @@ def main():
     test_loader = DataLoader(
         test_dataset, batch_size=args.batch_size,
         num_workers=8, drop_last=True,shuffle=False)
+        
     with open('data/HED-BSDS_PASCAL/HED-BSDS/test.lst', 'r') as f:
         test_list = f.readlines()
     test_list = [split(i.rstrip())[1] for i in test_list]
@@ -84,6 +86,11 @@ def main():
     """ GOD KNOWS WHAT THE HELL IS GOING ON """
     #TODO: Modify batch_size parameter for correctly loading.
     assert len(test_list) == len(test_loader), "%d vs %d" % (len(test_list), len(test_loader))
+
+
+    print("training length: ", len(train_dataset))
+    print("batch length:", len(train_loader))
+
 
     # model
     model = RCF()
@@ -185,20 +192,6 @@ def main():
         ], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=args.stepsize, gamma=args.gamma)
 
-
-    # optimizer = torch.optim.Adam([
-    #         {'params': net_parameters_id['conv1-4.weight']      , 'lr': args.lr*1    , 'weight_decay': args.weight_decay},
-    #         {'params': net_parameters_id['conv1-4.bias']        , 'lr': args.lr*2    , 'weight_decay': 0.},
-    #         {'params': net_parameters_id['conv5.weight']        , 'lr': args.lr*100  , 'weight_decay': args.weight_decay},
-    #         {'params': net_parameters_id['conv5.bias']          , 'lr': args.lr*200  , 'weight_decay': 0.},
-    #         {'params': net_parameters_id['conv_down_1-5.weight'], 'lr': args.lr*0.1  , 'weight_decay': args.weight_decay},
-    #         {'params': net_parameters_id['conv_down_1-5.bias']  , 'lr': args.lr*0.2  , 'weight_decay': 0.},
-    #         {'params': net_parameters_id['score_dsn_1-5.weight'], 'lr': args.lr*0.01 , 'weight_decay': args.weight_decay},
-    #         {'params': net_parameters_id['score_dsn_1-5.bias']  , 'lr': args.lr*0.02 , 'weight_decay': 0.},
-    #         {'params': net_parameters_id['score_final.weight']  , 'lr': args.lr*0.001, 'weight_decay': args.weight_decay},
-    #         {'params': net_parameters_id['score_final.bias']    , 'lr': args.lr*0.002, 'weight_decay': 0.},
-    #     ], lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay)
-    # scheduler = lr_scheduler.StepLR(optimizer, step_size=args.stepsize, gamma=args.gamma)
     
     # log
     log = Logger(join(TMP_DIR, '%s-%d-log.txt' %('sgd',args.lr)))
@@ -269,6 +262,7 @@ def train(train_loader, model, optimizer, epoch, save_dir):
                    'Time {batch_time.val:.3f} (avg:{batch_time.avg:.3f}) '.format(batch_time=batch_time) + \
                    'Loss {loss.val:f} (avg:{loss.avg:f}) '.format(
                        loss=losses)
+ 
             print(info)
             label_out = torch.eq(label, 1).float()
             outputs.append(label_out)
@@ -283,6 +277,17 @@ def train(train_loader, model, optimizer, epoch, save_dir):
         'state_dict': model.state_dict(),
         'optimizer': optimizer.state_dict()
             }, filename=join(save_dir, "epoch-%d-checkpoint.pth" % epoch))
+
+
+
+    # vis = visdom.Visdom()
+
+    # loss_window = vis.line(
+    #     Y=torch.zeros((1)).cuda(),
+    #     X=torch.zeros((1)).cuda(),
+    #     opts=dict(xlabel='epoch',ylabel='Loss',title='training loss',legend=['Loss']))
+
+    # vis.line(X=torch.ones((1,1)).cuda()*epoch,Y=torch.Tensor([epoch_loss]).unsqueeze(0).cuda(),win=loss_window,update='append')
 
     return losses.avg, epoch_loss
 
