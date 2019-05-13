@@ -62,31 +62,60 @@ class RCF(nn.Module):
         self.maxpool4 = nn.MaxPool2d(2, stride=1, ceil_mode=True)
 
 
-        #lr 0.1 0.2 decay 1 0
-        self.conv1_1_down = nn.Conv2d(64, 21, 1, padding=0)
-        self.conv1_2_down = nn.Conv2d(64, 21, 1, padding=0)
+        # #lr 0.1 0.2 decay 1 0
+        # self.conv1_1_down = nn.Conv2d(64, 21, 1, padding=0)
+        # self.conv1_2_down = nn.Conv2d(64, 21, 1, padding=0)
 
-        self.conv2_1_down = nn.Conv2d(128, 21, 1, padding=0)
-        self.conv2_2_down = nn.Conv2d(128, 21, 1, padding=0)
+        # self.conv2_1_down = nn.Conv2d(128, 21, 1, padding=0)
+        # self.conv2_2_down = nn.Conv2d(128, 21, 1, padding=0)
 
-        self.conv3_1_down = nn.Conv2d(256, 21, 1, padding=0)
-        self.conv3_2_down = nn.Conv2d(256, 21, 1, padding=0)
-        self.conv3_3_down = nn.Conv2d(256, 21, 1, padding=0)
+        # self.conv3_1_down = nn.Conv2d(256, 21, 1, padding=0)
+        # self.conv3_2_down = nn.Conv2d(256, 21, 1, padding=0)
+        # self.conv3_3_down = nn.Conv2d(256, 21, 1, padding=0)
 
-        self.conv4_1_down = nn.Conv2d(512, 21, 1, padding=0)
-        self.conv4_2_down = nn.Conv2d(512, 21, 1, padding=0)
-        self.conv4_3_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv4_1_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv4_2_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv4_3_down = nn.Conv2d(512, 21, 1, padding=0)
         
-        self.conv5_1_down = nn.Conv2d(512, 21, 1, padding=0)
-        self.conv5_2_down = nn.Conv2d(512, 21, 1, padding=0)
-        self.conv5_3_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv5_1_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv5_2_down = nn.Conv2d(512, 21, 1, padding=0)
+        # self.conv5_3_down = nn.Conv2d(512, 21, 1, padding=0)
 
-        #lr 0.01 0.02 decay 1 0
-        self.score_dsn1 = nn.Conv2d(21, 1, 1)
-        self.score_dsn2 = nn.Conv2d(21, 1, 1)
-        self.score_dsn3 = nn.Conv2d(21, 1, 1)
-        self.score_dsn4 = nn.Conv2d(21, 1, 1)
-        self.score_dsn5 = nn.Conv2d(21, 1, 1)
+        # #lr 0.01 0.02 decay 1 0
+        # self.score_dsn1 = nn.Conv2d(21, 1, 1)
+        # self.score_dsn2 = nn.Conv2d(21, 1, 1)
+        # self.score_dsn3 = nn.Conv2d(21, 1, 1)
+        # self.score_dsn4 = nn.Conv2d(21, 1, 1)
+        # self.score_dsn5 = nn.Conv2d(21, 1, 1)
+        # #lr 0.001 0.002 decay 1 0
+        # self.score_final = nn.Conv2d(5, 1, 1)
+
+
+        #lr 0.1 0.2 decay 1 0
+        self.conv1_1_down = nn.Conv2d(64, 1, 1, padding=0)
+        self.conv1_2_down = nn.Conv2d(64, 1, 1, padding=0)
+
+        self.conv2_1_down = nn.Conv2d(128, 1, 1, padding=0)
+        self.conv2_2_down = nn.Conv2d(128, 1, 1, padding=0)
+
+        self.conv3_1_down = nn.Conv2d(256, 1, 1, padding=0)
+        self.conv3_2_down = nn.Conv2d(256, 1, 1, padding=0)
+        self.conv3_3_down = nn.Conv2d(256, 1, 1, padding=0)
+
+        self.conv4_1_down = nn.Conv2d(512, 1, 1, padding=0)
+        self.conv4_2_down = nn.Conv2d(512, 1, 1, padding=0)
+        self.conv4_3_down = nn.Conv2d(512, 1, 1, padding=0)
+        
+        self.conv5_1_down = nn.Conv2d(512, 1, 1, padding=0)
+        self.conv5_2_down = nn.Conv2d(512, 1, 1, padding=0)
+        self.conv5_3_down = nn.Conv2d(512, 1, 1, padding=0)
+
+        # #lr 0.01 0.02 decay 1 0
+        # self.score_dsn1 = nn.Conv2d(1, 1, 1)
+        # self.score_dsn2 = nn.Conv2d(1, 1, 1)
+        # self.score_dsn3 = nn.Conv2d(1, 1, 1)
+        # self.score_dsn4 = nn.Conv2d(1, 1, 1)
+        # self.score_dsn5 = nn.Conv2d(1, 1, 1)
         #lr 0.001 0.002 decay 1 0
         self.score_final = nn.Conv2d(5, 1, 1)
 
@@ -129,11 +158,17 @@ class RCF(nn.Module):
         conv5_2_down = self.conv5_2_down(conv5_2)
         conv5_3_down = self.conv5_3_down(conv5_3)
 
-        so1_out = self.score_dsn1(conv1_1_down + conv1_2_down)
-        so2_out = self.score_dsn2(conv2_1_down + conv2_2_down)
-        so3_out = self.score_dsn3(conv3_1_down + conv3_2_down + conv3_3_down)
-        so4_out = self.score_dsn4(conv4_1_down + conv4_2_down + conv4_3_down)
-        so5_out = self.score_dsn5(conv5_1_down + conv5_2_down + conv5_3_down)
+        so1_out = (conv1_1_down + conv1_2_down)
+        so2_out = (conv2_1_down + conv2_2_down)
+        so3_out = (conv3_1_down + conv3_2_down + conv3_3_down)
+        so4_out = (conv4_1_down + conv4_2_down + conv4_3_down)
+        so5_out = (conv5_1_down + conv5_2_down + conv5_3_down)
+
+        # so1_out = self.score_dsn1(conv1_1_down + conv1_2_down)
+        # so2_out = self.score_dsn2(conv2_1_down + conv2_2_down)
+        # so3_out = self.score_dsn3(conv3_1_down + conv3_2_down + conv3_3_down)
+        # so4_out = self.score_dsn4(conv4_1_down + conv4_2_down + conv4_3_down)
+        # so5_out = self.score_dsn5(conv5_1_down + conv5_2_down + conv5_3_down)
         ## transpose and crop way 
         weight_deconv2 =  make_bilinear_weights(4, 1).cuda()
         weight_deconv3 =  make_bilinear_weights(8, 1).cuda()
