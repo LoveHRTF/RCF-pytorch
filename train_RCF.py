@@ -23,7 +23,7 @@ from functions import  cross_entropy_loss_RCF, SGD_caffe
 from torch.utils.data import DataLoader, sampler
 from utils import Logger, Averagvalue, save_checkpoint, load_vgg16pretrain
 from os.path import join, split, isdir, isfile, splitext, split, abspath, dirname
-import visdom
+# import visdom
 
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--batch_size', default=1, type=int, metavar='BT',
@@ -35,7 +35,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight_decay', '--wd', default=2e-4, type=float,
                     metavar='W', help='default weight decay')
-parser.add_argument('--stepsize', default=3, type=int, 
+parser.add_argument('--stepsize', default=3, type=int,
                     metavar='SS', help='learning rate step size')
 parser.add_argument('--gamma', '--gm', default=0.1, type=float,
                     help='learning rate decay parameter: Gamma')
@@ -70,13 +70,11 @@ def main():
     # dataset
     train_dataset = BSDS_RCFLoader(root=args.dataset, split="train")
     test_dataset = BSDS_RCFLoader(root=args.dataset, split="test")
-    train_loader = DataLoader(
-        train_dataset, batch_size=args.batch_size,
-        num_workers=8, drop_last=True,shuffle=True)
+    train_loader = DataLoader(train_dataset, num_workers=8, drop_last=True,shuffle=True)
     test_loader = DataLoader(
-        test_dataset, batch_size=args.batch_size,
+        test_dataset, batch_size=1,
         num_workers=8, drop_last=True,shuffle=False)
-        
+
     with open('data/HED-BSDS_PASCAL/HED-BSDS/test.lst', 'r') as f:
         test_list = f.readlines()
     test_list = [split(i.rstrip())[1] for i in test_list]
@@ -98,7 +96,7 @@ def main():
     model.apply(weights_init)
     load_vgg16pretrain(model)
     if args.resume:
-        if isfile(args.resume): 
+        if isfile(args.resume):
             print("=> loading checkpoint '{}'".format(args.resume))
             checkpoint = torch.load(args.resume)
             model.load_state_dict(checkpoint['state_dict'])
@@ -106,7 +104,7 @@ def main():
                   .format(args.resume))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
-    
+
     #tune lr
     net_parameters_id = {}
     net = model
@@ -192,7 +190,7 @@ def main():
         ], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=args.stepsize, gamma=args.gamma)
 
-    
+
     # log
     log = Logger(join(TMP_DIR, '%s-%d-log.txt' %('sgd',args.lr)))
     sys.stdout = log
@@ -262,7 +260,7 @@ def train(train_loader, model, optimizer, epoch, save_dir):
                    'Time {batch_time.val:.3f} (avg:{batch_time.avg:.3f}) '.format(batch_time=batch_time) + \
                    'Loss {loss.val:f} (avg:{loss.avg:f}) '.format(
                        loss=losses)
- 
+
             print(info)
             label_out = torch.eq(label, 1).float()
             outputs.append(label_out)
@@ -282,7 +280,7 @@ def train(train_loader, model, optimizer, epoch, save_dir):
 
     # vis = visdom.Visdom()
 
-    # loss_window = vis.line(
+    #n  loss_window = vis.line(
     #     Y=torch.zeros((1)).cuda(),
     #     X=torch.zeros((1)).cuda(),
     #     opts=dict(xlabel='epoch',ylabel='Loss',title='training loss',legend=['Loss']))

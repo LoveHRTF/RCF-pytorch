@@ -18,6 +18,9 @@ def prepare_image_cv2(im):
     im = np.transpose(im, (2, 0, 1)) # (H x W x C) to (C x H x W)
     return im
 
+def image_resize(im):
+    p = transforms.Compose([transforms.Scale((224,224))])
+    return p(im)
 
 class BSDS_RCFLoader(data.Dataset):
     """
@@ -42,7 +45,9 @@ class BSDS_RCFLoader(data.Dataset):
     def __getitem__(self, index):
         if self.split == "train":
             img_file, lb_file = self.filelist[index].split()
-            lb = np.array(Image.open(join(self.root, lb_file)), dtype=np.float32)
+            lb = Image.open(join(self.root, lb_file))
+            lb = image_resize(lb)
+            lb = np.array(lb, dtype=np.float32)
             if lb.ndim == 3:
                 lb = np.squeeze(lb[:, :, 0])
             assert lb.ndim == 2
@@ -55,10 +60,9 @@ class BSDS_RCFLoader(data.Dataset):
             img_file = self.filelist[index].rstrip()
 
         if self.split == "train":
-            # img = np.array(cv2.imread(join(self.root, img_file)), dtype=np.float32)
-            # img = prepare_image_cv2(img)
-            # return img, lb
-            img = np.array(Image.open(join(self.root, img_file)), dtype=np.float32)
+            img = Image.open(join(self.root, img_file))
+            img = image_resize(img)
+            img = np.array(img, dtype=np.float32)
             img = prepare_image_PIL(img)
             return img, lb
         else:
