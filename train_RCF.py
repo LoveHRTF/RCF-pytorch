@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--batch_size', default=1, type=int, metavar='BT',
                     help='batch size')
 # =============== optimizer
-parser.add_argument('--lr', '--learning_rate', default=1e-6, type=float,
+parser.add_argument('--lr', '--learning_rate', default=1e-8, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
@@ -70,7 +70,12 @@ def main():
     # dataset
     train_dataset = BSDS_RCFLoader(root=args.dataset, split="train")
     test_dataset = BSDS_RCFLoader(root=args.dataset, split="test")
-    train_loader = DataLoader(train_dataset, num_workers=8, drop_last=True,shuffle=True)
+
+    train_loader = DataLoader(
+        train_dataset, batch_size=args.batch_size,
+        num_workers=8, drop_last=True,shuffle=True)
+
+
     test_loader = DataLoader(
         test_dataset, batch_size=1,
         num_workers=8, drop_last=True,shuffle=False)
@@ -183,8 +188,8 @@ def main():
             {'params': net_parameters_id['conv5.bias']          , 'lr': args.lr*200  , 'weight_decay': 0.},
             {'params': net_parameters_id['conv_down_1-5.weight'], 'lr': args.lr*0.1  , 'weight_decay': args.weight_decay},
             {'params': net_parameters_id['conv_down_1-5.bias']  , 'lr': args.lr*0.2  , 'weight_decay': 0.},
-            {'params': net_parameters_id['score_dsn_1-5.weight'], 'lr': args.lr*0.01 , 'weight_decay': args.weight_decay},
-            {'params': net_parameters_id['score_dsn_1-5.bias']  , 'lr': args.lr*0.02 , 'weight_decay': 0.},
+            # {'params': net_parameters_id['score_dsn_1-5.weight'], 'lr': args.lr*0.01 , 'weight_decay': args.weight_decay},
+            # {'params': net_parameters_id['score_dsn_1-5.bias']  , 'lr': args.lr*0.02 , 'weight_decay': 0.},
             {'params': net_parameters_id['score_final.weight']  , 'lr': args.lr*0.001, 'weight_decay': args.weight_decay},
             {'params': net_parameters_id['score_final.bias']    , 'lr': args.lr*0.002, 'weight_decay': 0.},
         ], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
