@@ -9,3 +9,4 @@ vgg16convs.mat
 _test*
 HED-BSDS/
 model_out/
+test/illustration/

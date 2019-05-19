@@ -3,6 +3,7 @@ import os
 from os.path import join, abspath, splitext, split, isdir, isfile
 from PIL import Image
 import torchvision.transforms as transforms
+import skimage.measure
 import numpy as np
 import cv2
 
@@ -20,7 +21,7 @@ def prepare_image_cv2(im):
     return im
 
 def image_resize(im):
-    p = transforms.Compose([transforms.Scale((224,224))])
+    p = transforms.Compose([transforms.Resize((224,224))])
     return p(im)
 
 class BSDS_RCFLoader(data.Dataset):
@@ -47,7 +48,7 @@ class BSDS_RCFLoader(data.Dataset):
         if self.split == "train":
             img_file, lb_file = self.filelist[index].split()
             lb = Image.open(join(self.root, lb_file))
-            lb = image_resize(lb)
+            # lb = image_resize(lb)
             lb = np.array(lb, dtype=np.float32)
             if lb.ndim == 3:
                 lb = np.squeeze(lb[:, :, 0])
@@ -62,7 +63,7 @@ class BSDS_RCFLoader(data.Dataset):
 
         if self.split == "train":
             img = Image.open(join(self.root, img_file))
-            img = image_resize(img)
+            # img = image_resize(img)
             img = np.array(img, dtype=np.float32)
             img = prepare_image_PIL(img)
             return img, lb

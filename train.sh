@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Request a GPU partition node and access to 1 GPU
-#SBATCH -p gpu --gres=gpu:1
+#SBATCH -p gpu --gres=gpu:1 -w gpu1210
 
 # Request 8 CPU core
 #SBATCH -n 8 
+
 
 # Request enough memory
 #SBATCH --mem=48G
@@ -15,4 +16,5 @@
 
 
 # Run Script
-python train_RCF.py --tmp model_out/twenty_one --start_epoch 19 --lr 3e-7 --resume model_out/twenty_one/checkpoint_epoch19.pth
+source ~/.local/bin/cv2/bin/activate
+python train_RCF.py --tmp model_out/twenty_one  --learning_rate 1e-7 --resume /users/guest418/scratch/RCF-pytorch/model_out/twenty_one/checkpoint_epoch2.pth

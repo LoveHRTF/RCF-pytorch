@@ -70,7 +70,9 @@ def main():
     # dataset
     train_dataset = BSDS_RCFLoader(root=args.dataset, split="train")
     test_dataset = BSDS_RCFLoader(root=args.dataset, split="test")
-    train_loader = DataLoader(train_dataset, num_workers=8, drop_last=True,shuffle=True)
+    train_loader = DataLoader(
+        train_dataset, batch_size=args.batch_size, num_workers=8, 
+        drop_last=True,shuffle=True)
     test_loader = DataLoader(
         test_dataset, batch_size=1,
         num_workers=8, drop_last=True,shuffle=False)
@@ -176,7 +178,22 @@ def main():
                 net_parameters_id['score_final.bias'] = []
             net_parameters_id['score_final.bias'].append(p)
 
-    optimizer = torch.optim.SGD([
+    # optimizer = torch.optim.SGD([
+    #         {'params': net_parameters_id['conv1-4.weight']      , 'lr': args.lr*1    , 'weight_decay': args.weight_decay},
+    #         {'params': net_parameters_id['conv1-4.bias']        , 'lr': args.lr*2    , 'weight_decay': 0.},
+    #         {'params': net_parameters_id['conv5.weight']        , 'lr': args.lr*100  , 'weight_decay': args.weight_decay},
+    #         {'params': net_parameters_id['conv5.bias']          , 'lr': args.lr*200  , 'weight_decay': 0.},
+    #         {'params': net_parameters_id['conv_down_1-5.weight'], 'lr': args.lr*0.1  , 'weight_decay': args.weight_decay},
+    #         {'params': net_parameters_id['conv_down_1-5.bias']  , 'lr': args.lr*0.2  , 'weight_decay': 0.},
+    #         {'params': net_parameters_id['score_dsn_1-5.weight'], 'lr': args.lr*0.01 , 'weight_decay': args.weight_decay},
+    #         {'params': net_parameters_id['score_dsn_1-5.bias']  , 'lr': args.lr*0.02 , 'weight_decay': 0.},
+    #         {'params': net_parameters_id['score_final.weight']  , 'lr': args.lr*0.001, 'weight_decay': args.weight_decay},
+    #         {'params': net_parameters_id['score_final.bias']    , 'lr': args.lr*0.002, 'weight_decay': 0.},
+    #     ], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    # scheduler = lr_scheduler.StepLR(optimizer, step_size=args.stepsize, gamma=args.gamma)
+
+
+    optimizer = torch.optim.Adam([
             {'params': net_parameters_id['conv1-4.weight']      , 'lr': args.lr*1    , 'weight_decay': args.weight_decay},
             {'params': net_parameters_id['conv1-4.bias']        , 'lr': args.lr*2    , 'weight_decay': 0.},
             {'params': net_parameters_id['conv5.weight']        , 'lr': args.lr*100  , 'weight_decay': args.weight_decay},
@@ -187,9 +204,8 @@ def main():
             {'params': net_parameters_id['score_dsn_1-5.bias']  , 'lr': args.lr*0.02 , 'weight_decay': 0.},
             {'params': net_parameters_id['score_final.weight']  , 'lr': args.lr*0.001, 'weight_decay': args.weight_decay},
             {'params': net_parameters_id['score_final.bias']    , 'lr': args.lr*0.002, 'weight_decay': 0.},
-        ], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+        ], lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=args.stepsize, gamma=args.gamma)
-
 
     # log
     log = Logger(join(TMP_DIR, '%s-%d-log.txt' %('sgd',args.lr)))
@@ -207,9 +223,9 @@ def main():
             train_loader, model, optimizer, epoch,
             save_dir = join(TMP_DIR, 'epoch-%d-training-record' % epoch))
         test(model, test_loader, epoch=epoch, test_list=test_list,
-            save_dir = join(TMP_DIR, 'epoch-%d-testing-record-view' % epoch))
+            save_dir = join(TMP_DIR, 'epoch-%d-test-single-scale' % epoch))
         multiscale_test(model, test_loader, epoch=epoch, test_list=test_list,
-            save_dir = join(TMP_DIR, 'epoch-%d-testing-record' % epoch))
+            save_dir = join(TMP_DIR, 'epoch-%d-test-multi-scale' % epoch))
         log.flush() # write log
         # Save checkpoint
         save_file = os.path.join(TMP_DIR, 'checkpoint_epoch{}.pth'.format(epoch))
@@ -305,7 +321,8 @@ def test(model, test_loader, epoch, test_list, save_dir):
         torchvision.utils.save_image(1-results_all, join(save_dir, "%s.jpg" % filename))
         result = Image.fromarray((result * 255).astype(np.uint8))
         result.save(join(save_dir, "%s.png" % filename))
-        print("Running test [%d/%d]" % (idx + 1, len(test_loader)))
+        if idx % 10 == 0:
+            print("Running test [%d/%d]" % (idx + 1, len(test_loader)))
 # torch.nn.functional.upsample(input, size=None, scale_factor=None, mode='nearest', align_corners=None)
 def multiscale_test(model, test_loader, epoch, test_list, save_dir):
     model.eval()
@@ -332,7 +349,8 @@ def multiscale_test(model, test_loader, epoch, test_list, save_dir):
         result_out.save(join(save_dir, "%s.jpg" % filename))
         result_out_test = Image.fromarray((multi_fuse * 255).astype(np.uint8))
         result_out_test.save(join(save_dir, "%s.png" % filename))
-        print("Running test [%d/%d]" % (idx + 1, len(test_loader)))
+        if idx % 10 == 0:
+            print("Running test [%d/%d]" % (idx + 1, len(test_loader)))
 
 def weights_init(m):
     if isinstance(m, nn.Conv2d):
