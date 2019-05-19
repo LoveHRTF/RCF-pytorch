@@ -1,14 +1,16 @@
-## Based on RCF-pytorch
+## RCF-pytorch Improvements
+
+2019 Spring ENGN 2560 Computer Vision Final Project
+
+Group Members: Ziwei Chen, Yang Jiao, Yiming Li
+
+This repository is highly based on [Xuanyi Li](https://github.com/meteorshowers)'s [RCF PyTorch project](https://github.com/meteorshowers/RCF-pytorch). Thanks a lot!
 
 ### Richer Convolutional Features for Edge Detection
-Thanks to <a href="https://github.com/yun-liu">yun-liu's</a> help.
-Created by XuanyiLi, if you have any problem in using it, please contact:xuanyili.edu@gmail.com.
-The best result of my pytorch model is 0.808 ODS F-score now.
-#### my model result
-the following are the side outputs and the prediction example
-![prediction example](https://github.com/meteorshowers/RCF-pytorch/blob/master/doc/326025.jpg)
+
+
 ### Citation
-If you find our work useful in your research, please consider citing:
+The project relys on RCF. Please consider citing:
 
 @article{RcfEdgePami2019,
   author = {Yun Liu and Ming-Ming Cheng and Xiaowei Hu and Jia-Wang Bian and Le Zhang and Xiang Bai and Jinhui Tang},
@@ -34,35 +36,37 @@ Install <a href="https://pytorch.org/">pytorch</a>. The code is tested under 0.4
 
 ### Usage
 
-#### image edge detection
+#### Data Preparation
+
+For dataset used in this project, please refer to [data_organize.md](data_orgnize.md) 
+
+#### Training
 
 To train a RCF model on BSDS500:
 
         python train_RCF.py
 
-If you have multiple GPUs on your machine, you can also run the multi-GPU version training:
+Or on Brown CCV:
 
-        CUDA_VISIBLE_DEVICES=0,1 python train_multi_gpu.py --num_gpus 2
+        sbatch train.sh
 
-After training, to evaluate:
 
-        python evaluate.py (for further work)
+#### Evaluation
 
-<i>Side Note:</i>  Hello mingyang, I love you
+We use [BSDS-500](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html) and its benchmark software for evalutaion. 
+
+Before evaluation, the non-maximum suppression must be perform. Refer to [nms_pipeline](nms_pipeline.md) for detailed instruction.
+
+
 
 ### License
 Our code is released under MIT License (see LICENSE file for details).
 
-### Updates
 
-### To do 
-* Add support for multi-gpu training for the edge detetion task.
-* Improve the performance to 0.806/0.811 in the original paper.
-* Add a gpu version of edge-eval code to accelerate the evaluation process.
-* Add pami version of RCF.
 ### source：
 *  To download the pretrained model, please click https://drive.google.com/open?id=1TupHeoBKawrniDka0Hc64m3BG4OKG8nM
 (This pretrained model is not the best model, just for communicating)
+
 ### Related Projects
 [1] <a href="https://github.com/yun-liu/rcf">Richer Convolutional Features for Edge Detection</a> 
 
